@@ -1,26 +1,48 @@
-$(document).ready(function() {
-    alert(x.sort(DescComparator));
+$(document).ready(function () {
+    var arr = [1, 2, 3, 4, 5];
+    var result = [];
+
+    function getSums(arr) {
+        arr.reduce(function (total, current) {
+            result.push(total + current);
+            return total + current;
+        }, 0)
+    }
+
+    getSums(arr);
+    console.log(result);
+    registerHandlers();
 });
 
-var x = ["zero", "one", "two", "zorro", "zion", "abc"];
+function registerHandlers() {
+    $('#dishes').click(loadAllDishes);
+}
 
-/**
- * @return {number}
- */
-var DescComparator = function(a, b) {
-     if (a.charAt(0) === 'z' && b.charAt(0) === 'z') {
-         return 0;
-     } else if (a.charAt(0) === 'z') {
-         return -1;
-     } else if (b.charAt(0) === 'z') {
-         return 1;
-     } else {
-         if (a === b) {
-             return 0;
-         } else if (a < b) {
-             return -1;
-         } else {
-             return 1;
-         }
-     }
-};
+function loadAllDishes() {
+    $.ajax({
+        type: "POST",
+        url: "/dishes/loadAll",
+        success: function (resp) {
+            alert(resp);
+
+            parseDishes(resp);
+        },
+        error: function () {
+            alert("server error")
+        }
+    })
+}
+
+function parseDishes(resp) {
+    var arrayDishes = $.parseJSON(resp);
+    for (var i = 0; i < arrayDishes.length; i++) {
+        constructHTML(arrayDishes[i]);
+    }
+}
+
+function constructHTML(obj) {
+    var $dishesContainer = $("#dishesContainer");
+    $dishesContainer.append("<div>" + obj.name + "</div>");
+    $dishesContainer.append("<div>" + obj.price + "</div>");
+    $dishesContainer.append("<div>" + obj.weight + "</div>");
+}
